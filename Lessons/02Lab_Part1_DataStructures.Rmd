@@ -3,6 +3,8 @@ title: "Lab 2 - Data Structures in R"
 subtitle: "Environmental Data Analytics"
 author: "John Fay & Luana Lima"
 date: "Fall 2025"
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Objective
@@ -36,6 +38,7 @@ R treats objects differently based on their characteristics. For more informatio
 ## Vectors
 ### Creating Vectors
 Add comments below that specify what kind of vectors are created. (First answer is provided.)
+everything in the vector has to be the same datatype
 
 ```{r Creating vectors}
 # Vectors ----
@@ -65,6 +68,7 @@ vector4 <- c(10:15)
 
 #
 c(vector1, vector4)
+vector5 <-c(vector1, vector4)
 
 #
 vector1 * vector4
@@ -72,10 +76,10 @@ vector1 * vector4
 #
 vector1 * 10
 
-#
+# "to upper case"
 toupper(vector2) 
 
-#
+#inverting the logic
 !vector3
 
 ```
@@ -87,16 +91,20 @@ Find a 5-day forecast of temperatures (Fahrenheit) for Durham, North Carolina. C
 ```{r Vector Exercise}
 
 #Assign to the variable 'temps_F' a vector of high temperatures in F
+temps_F <- c(80, 81, 81, 83, 83)
+temps_F
 
+# the third number in the sequence
+temps_F[3] 
 
 #What is the average of these temperatures 
 
-
+mean(temps_F)
 #Compute the difference between each temperature and the average calculated above
-
+temps_diff <- c(temps_F - mean (temps_F))
 
 #Subtract 32 and multiply by 5/9ths to create a vector in Celsius
-
+temps_C <- c((temps_F - 32)*5/9)
 
 ```
 
@@ -167,9 +175,9 @@ matrix4['R2','C1']
 ### Exercise 1b: Matrices
 Compute the mean of column "C2" in matrix4. (Should be 14.5)
 ```{r Matrix Exercise}
-
+matrix4[,"C2"]
+mean(matrix4[,"C2"])
 ```
-
 
 
 ## Lists
@@ -224,8 +232,8 @@ dataframe1 <- data.frame(d,e,f)
 #Set the column names & View
 names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # 
 
-#Add a new column to the dataframe
-dataframe1$month <- c('Jan','Feb', 'Mar', 'Apr')
+#Add a new column to the dataframe (it has to be vector of the same length, if no value say NA)
+dataframe1$month <- c('Jan','Feb', 'Mar','Apr')
 
 ```
 
@@ -250,5 +258,6 @@ out1 <- dataframe1['Color']; class(out1)
 out2 <- dataframe1$Color; class(out2)
 
 out3 <- dataframe1[c("ID","Passed")]; class(out3)
+#class
 
 ```
