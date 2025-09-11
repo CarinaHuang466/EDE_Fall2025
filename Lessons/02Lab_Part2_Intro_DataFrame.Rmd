@@ -68,7 +68,7 @@ How could you add columns to *df_car_speed*?
 ```{r}
 car_dist <- cars$dist
 
-#Option 1
+#Option 1 bind two columns
 df <- cbind(df_car_speed,car_dist)  #similarly rows could be added using rbind()
 class(df)
 df
@@ -93,7 +93,7 @@ names(df)
 How would you create a data frame?
 
 ```{r}
-#useful function data.frame()
+#useful function data.frame() they can sometimes work interchangeably
 create_df <- data.frame("speed"=car_speed,"dist"=car_dist)
 create_df
 ```
