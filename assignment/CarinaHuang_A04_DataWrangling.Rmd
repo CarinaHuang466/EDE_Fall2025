@@ -29,15 +29,33 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Wr
 
 2. Add the appropriate code to reveal the dimensions of the four datasets. 
 
-```{r setup, message = FALSE}
+```{r setup, message = FALSE, output = FALSE}
 #1a 
-
+library(tidyverse)
+library(lubridate)
+library(here)
 #1b 
+here()
 
 #1c 
+EPAO32018<- read.csv(
+  "/Users/carinahuang/EDE2025/Data/Raw/EPAair_O3_NC2018_raw.csv", 
+  stringsAsFactors = TRUE)
+EPAO32019<-read.csv(
+  "/Users/carinahuang/EDE2025/Data/Raw/EPAair_O3_NC2019_raw.csv", 
+  stringsAsFactors = TRUE)
+EPAPM252018 <- read.csv(
+  "/Users/carinahuang/EDE2025/Data/Raw/EPAair_PM25_NC2018_raw.csv",  
+  stringsAsFactors = TRUE)
+EPAPM252019 <- read.csv(
+  "/Users/carinahuang/EDE2025/Data/Raw/EPAair_PM25_NC2019_raw.csv",  
+  stringsAsFactors = TRUE)
 
 #2 
-
+dim(EPAO32018)
+dim(EPAO32019)
+dim(EPAPM252018)
+dim(EPAPM252019)
 
 ```
 
@@ -56,16 +74,34 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Wr
 
 ```{r questions 3 thru 4}
 #3
-
+EPAO32018$Date <- as.Date(as.character(EPAO32018$Date), format = "%m/%d/%Y")
+EPAO32019$Date <- as.Date(as.character(EPAO32019$Date), format = "%m/%d/%Y")
+EPAPM252018$Date <- as.Date(as.character(EPAPM252018$Date), format = "%m/%d/%Y")
+EPAPM252019$Date <- as.Date(as.character(EPAPM252019$Date), format = "%m/%d/%Y")
 
 #4
-
+EPAO32018 <- select(
+  EPAO32018, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, 
+  COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+EPAO32019 <- select(
+  EPAO32019, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, 
+  COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+EPAPM252018 <- select(
+  EPAPM252018, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, 
+  COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+EPAPM252019 <- select(
+  EPAPM252019, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, 
+  COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 
 #5
-
+EPAPM252018 <- mutate(EPAPM252018, AQS_PARAMETER_DESC = "PM2.5")
+EPAPM252019 <- mutate(EPAPM252019, AQS_PARAMETER_DESC = "PM2.5")
 
 #6
-
+write.csv(EPAO32018, file = "./Data/Processed/EPAO32018_Processed.csv")
+write.csv(EPAO32019, file = "./Data/Processed/EPAO32019_Processed.csv")
+write.csv(EPAPM252018, file = "./Data/Processed/EPAPM252018_Processed.csv")
+write.csv(EPAPM252019, file = "./Data/Processed/EPAPM252019_Processed.csv")
 ```
 
 
@@ -94,23 +130,38 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Wr
 
 10. Call up the dimensions of your new tidy dataset.
 
+
 11. Save your processed dataset with the following file name: "EPAair_O3_PM25_NC1819_Processed.csv"
 
 ```{r questions 7 thru 11}
 #7 
+EPAdata <- rbind(EPAO32018, EPAO32019, EPAPM252018, EPAPM252019)
 
+dim(EPAdata)
 
 #8 
-
+EPAdata <-subset(EPAdata, Site.Name %in% c(
+  "Linville Falls", "Durham Armory", "Leggett", "Hattie Avenue",  
+  "Clemmons Middle", "Mendenhall School", "Frying Pan Mountain", 
+  "West Johnston Co.", "Garinger High School", "Castle Hayne", 
+  "Pitt Agri. Center", "Bryson City", "Millbrook School")) %>% 
+  group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>% 
+  summarise(meanAQI = mean(DAILY_AQI_VALUE),
+            meanlat = mean(SITE_LATITUDE),
+            meanlong = mean(SITE_LONGITUDE)
+  ) %>% 
+  mutate(month = month(Date)) %>% 
+  mutate(year = year(Date))
 
 #9
-
+EPAdata <- pivot_wider(EPAdata, names_from = AQS_PARAMETER_DESC, values_from = meanAQI)
 
 #10
-
+dim(EPAdata)
 
 #11
-
+write.csv(EPAdata, 
+          file = "./Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv")
 
 ```
 
@@ -124,15 +175,21 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Wr
 ```{r questions 12 and 13}
 
 #12
-
+summary <- EPAdata %>% 
+  group_by(Site.Name, month, year) %>% 
+  summarise(
+    mean_ozone = (mean(Ozone)),
+    mean_pm25 = (mean(PM2.5))
+  ) %>% 
+  drop_na(mean_ozone)
 
 #13
-
-
+dim(summary)
 
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`? Hint: replace `drop_na` with `na.omit` in part 12 and observe what happens with the dimensions of the summary date frame.
 
-> Answer: 
+> Answer: na.omit omits both the PM 2.5 and Ozone NA results, and we only want 
+to get rid of the ozone NAs. 
 

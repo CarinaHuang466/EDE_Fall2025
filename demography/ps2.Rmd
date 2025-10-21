@@ -1,0 +1,75 @@
+```{r}
+#install.packages("demography")
+library(demography)
+library(here)
+library(tidyverse)
+library(stringr)
+library(ggplot2)
+```
+
+```{r}
+popdeath <- read.csv("demography/whiteblackmendeath.csv")
+popdeath.gathered <- pivot_longer(popdeath,White.Men.Deaths:Black.Men.Population, names_to = "variable", values_to = "n") |>
+  mutate(race = ifelse(str_detect(variable, 'White') == TRUE, 
+                       'White',
+                       'Black')) |>
+  mutate(situation = ifelse(str_detect(variable, 'Deaths') == TRUE, 
+                     'death',
+                     'pop')) |>
+  select(-variable)
+```
+
+```{r}
+#Question 1
+CDRWhite <- sum(popdeath$White.Men.Deaths) / sum(popdeath$White.Men.Population) *1000
+CDRBlack <- sum(popdeath$Black.Men.Deaths) / sum(popdeath$Black.Men.Population) *1000
+
+```
+```{r}
+#question b
+popdeath2 <- popdeath |>
+  mutate(pctwdeath = White.Men.Deaths / sum(popdeath$White.Men.Deaths)) |>
+  mutate(pctbdeath = Black.Men.Deaths / sum(popdeath$Black.Men.Deaths)) |>
+  mutate(pctwpop = White.Men.Population / sum(popdeath$White.Men.Population)) |>
+  mutate(pctbpop = Black.Men.Population / sum(popdeath$Black.Men.Population)) |>
+  mutate(stanBlack = pctwpop*pctbdeath*1000) |>
+  mutate(wdeathrate = White.Men.Deaths/White.Men.Population) |>
+  mutate(bdeathrate = Black.Men.Deaths/ Black.Men.Population)|>
+  mutate(SMR = wdeathrate * Black.Men.Population) |>
+  mutate(effect1 = (pctbpop - pctwpop) *(wdeathrate + bdeathrate)/2)|>
+  mutate(effect2 = (bdeathrate - wdeathrate) * (pctbpop + pctwpop) /2)
+
+ASCDR <- sum(popdeath2$stanBlack)
+finalSMR <- sum(popdeath2$Black.Men.Deaths)/ sum(popdeath2$SMR)
+CDR2 = 1.42472*11.72194
+sumeffect1 = sum(popdeath2$effect1)
+sumeffect2 = sum(popdeath2$effect2)
+difference = (sumeffect1 + sumeffect2)
+CDRdifference = CDRBlack-CDRWhite 
+proportionage = sumeffect1 / difference
+proportionrate = sumeffect2 / difference
+
+
+```
+
+```{r}
+popdeath2 |> 
+  ggplot(aes(x = X, y = pctwpop)) +
+  geom_col() +
+  coord_flip()
+  
+popdeath2 |> 
+  ggplot(aes(x = X, y = pctbpop)) +
+  geom_col() +
+  coord_flip()
+  
+```
+
+
+```{r}
+cdra=22/6000
+cdrb=14/6000
+
+```
+
+

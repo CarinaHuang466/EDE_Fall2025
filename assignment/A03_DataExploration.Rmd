@@ -34,7 +34,9 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 
 ```{r setup,  message = FALSE}
 
-
+litter <- read.csv("Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv")
+class(litter$collectDate)
+unique(litter$collectDate)
 ```
 
 ## Learn about your system

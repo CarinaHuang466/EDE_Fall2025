@@ -3,7 +3,118 @@
 
 ```
 
-```{r}
+```{r loading libraries}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(here)
+library(cowplot)
+library(lubridate)
+library(dplyr)
+
+#getting working directory
+getwd()
+
+```
+
+```{r read / loading the data (csv)}
+
+read.csv(here("Data/Raw/.csv"), stringsAsFactors = TRUE)
+
+```
+
+```{r removing the na}
+x.complete <- na.omit(x)
+```
+
+```{r changing dates}
+
+"yourdf"$"nameofthecolumn" <- ymd("yourdf"$"nameofthecolumn")
+data$date <- as.Date(data$date, format = "%m/%d/%Y") 
+
+```
+
+```{r centuryfix}
+#Fix for century issue
+str_past <- "55-feb-3"
+
+#Alternative 1
+date_obj_past <- fast_strptime(str_past,"%y-%b-%d",cutoff_2000=24L)
+date_obj_past
+
+#Alternative 2
+date_obj_past2 <- parse_date_time2(str_past,"ymd",cutoff_2000=24L)
+date_obj_past2
+
+#Functions ymd(), mdy(), ydm() do not take argument cutoff_2000
+```
+
+```{r creating a theme}
+mytheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"),
+        axis.title = element_text(family = 'Avenir'),
+        plot.title = element_text(family = 'Avenir', size = 18),
+        legend.position = "top",
+        legend.title = element_text(family = 'Avenir')
+        )
+```
+
+```{r dplyr}
+#filtering
+filter(data, x == value)
+#selecting
+select(data, a, x:y)
+#mutate
+mutate(data, new column = )
+#pipe operate
+%>% |>
+
+
+
+```
+
+
+```{r} 
+# ggplot
+
+plot <- ggplot(x, aes(x=a, y=b, color = c, shape = d))+
+  #point
+  geom_point()+
+  #boxplot
+  geom_boxplot()+
+  #bar chart
+  geom_bar()+
+  # freq poly
+  geom_freqpoly()+
+  #violin plot
+  geom_violin()+
+  #best fit line
+  geom_smooth(method = lm, se=FALSE)+
+  #things to put in the aes bracket
+    binwidth = 10
+    #linetype
+    lty = 
+      1 <- solid
+      2 <- dashed
+      3 <- dotted
+      
+  #upper limit value for x and y
+  xlim(0,60)+
+  ylim(0,60)+
+  #label titles
+  labs(title = "")+
+  labs(x= "a", y="b")+
+  #if u want separate legend 
+  legend <- get_legend(x)
+  #changing the label names
+  theme(legend.position = "none")
+  #cowplot combining everything together
+  plot_grid(plota, plotb, plotc,legend, nrow = x, align = 'h')
+  #dont forget to print if u want the plot to show up when u knit
+  print(x)
+  #change the angle of the x label
+  theme(axis.text.x = element_text(angle =45))
+        
 
 ```
 
